@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
         const joinMessage = {
             content: `${username} has joined the group.`,
-            senderId: 'system',
+            senderId: '',
             timestamp: new Date(),
             status: 'delivered' // Initially delivered
         };
@@ -82,6 +82,7 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(5000, () => {
+const port = process.env.PORT || 5000;
+server.listen(port, () => {
     console.log('Server running on http://localhost:5000');
 });
