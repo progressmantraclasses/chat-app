@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 
         const joinMessage = {
             content: `${username} has joined the group.`,
-            senderId: 'system',
+            senderId: '',
             timestamp: new Date(),
             status: 'delivered' // Initially delivered
         };
