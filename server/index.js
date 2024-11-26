@@ -17,7 +17,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: "*",  // Frontend URL
+        origin: "https://unknown-chats.web.app",  // Frontend URL
         methods: ["GET", "POST"]
     }
 });
