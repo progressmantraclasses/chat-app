@@ -17,7 +17,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: "https://unknown-chats.web.app",  // Frontend URL
+        origin: "http://localhost:3000",  // Frontend URL
         methods: ["GET", "POST"]
     }
 });
@@ -42,7 +42,7 @@ const upload = multer({ storage });
 
 // Handle file upload
 app.post('/upload', upload.single('media'), (req, res) => {
-    const filePath = `https://chat-app-33o0.onrender.com/uploads/${req.file.filename}`;
+    const filePath = `http://localhost:5000/uploads/${req.file.filename}`;
     res.json({ filePath });
 });
 
@@ -86,10 +86,42 @@ io.on('connection', (socket) => {
         io.to(groupId).emit('messageSeen', messageSeen);
     });
 
+
+    socket.on('sendMessage', (message) => {
+        message.status = 'sent';
+ 
+        socket.on('markAsSeen', ({ messageId, groupId }) => {
+            // Update the message status in the database (optional)
+            // Notify all users in the group
+            io.to(groupId).emit('messageStatus', { messageId, status: 'seen' });
+        });
+        
+    
+        // Simulate a delay for message delivery
+        setTimeout(() => {
+            message.status = 'delivered';
+            io.to(message.groupId).emit('messageStatus', {
+                messageId: message.timestamp,
+                status: 'delivered'
+            });
+    
+            // Simulate a delay for message seen
+            setTimeout(() => {
+                message.status = 'seen';
+                io.to(message.senderId).emit('messageStatus', {
+                    messageId: message.timestamp,
+                    status: 'seen'
+                });
+            }, 0);
+        }, 0);
+    });
+    
+
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });
 });
+
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
