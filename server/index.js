@@ -183,6 +183,25 @@ app.post('/login', async (req, res) => {
     }
 });
 
+
+
+const groupSchema = new mongoose.Schema({
+    groupId: { type: String, required: true, unique: true },
+    groupName: { type: String, required: true }
+});
+const Group = mongoose.model('Group', groupSchema);
+
+// Fetch all groups
+app.get('/groups', async (req, res) => {
+    try {
+        const groups = await Group.find({});
+        res.json(groups);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch groups' });
+    }
+});
+
+
 server.listen(5000, () => {
     console.log('Server running on http://localhost:5000');
 });
